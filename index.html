@@ -109,6 +109,10 @@
                 top: 70px;
                 right: 20px;
                 width: 300px;
+                max-height: calc(100vh - 100px);
+                display: flex;
+                flex-direction: column;
+
                 background: rgba(15, 15, 20, 0.4);
                 border-radius: 16px;
                 border: 1px solid rgba(255, 255, 255, 0.1);
@@ -117,12 +121,10 @@
                 box-shadow:
                     0 20px 40px rgba(0, 0, 0, 0.4),
                     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: url(#liquid-filter);
-                padding: 24px;
-                max-height: 80vh;
-                overflow-y: auto;
-                scrollbar-gutter: stable;
+
                 transition:
                     opacity 0.3s ease,
                     transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
@@ -130,6 +132,7 @@
                 transform: translateY(0) scale(1);
                 transform-origin: top right;
                 pointer-events: auto;
+                overflow: hidden; /* Clip children */
             }
 
             #controls.hidden {
@@ -137,16 +140,67 @@
                 transform: translateY(-10px) scale(0.9);
                 pointer-events: none;
             }
-            #controls::-webkit-scrollbar {
+
+            #scroll-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 24px;
+                padding-bottom: 10px;
+                scrollbar-gutter: stable;
+            }
+
+            #scroll-content::-webkit-scrollbar {
                 width: 6px;
             }
-            #controls::-webkit-scrollbar-track {
+            #scroll-content::-webkit-scrollbar-track {
                 background: rgba(0, 0, 0, 0.1);
-                border-radius: 3px;
             }
-            #controls::-webkit-scrollbar-thumb {
+            #scroll-content::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.2);
                 border-radius: 3px;
+            }
+            #scroll-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .pinned-footer {
+                flex-shrink: 0;
+                padding: 16px 24px;
+                background: rgba(0, 0, 0, 0.2);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                gap: 10px;
+            }
+
+            .btn-action {
+                flex: 1;
+                padding: 10px 0;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.8);
+                font-family: inherit;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .btn-action:hover {
+                background: rgba(255, 255, 255, 0.15);
+                color: #fff;
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            #btn-share {
+                background: rgba(50, 100, 255, 0.1);
+                border-color: rgba(50, 100, 255, 0.2);
+                color: #8ab4ff;
+            }
+            #btn-share:hover {
+                background: rgba(50, 100, 255, 0.25);
+                border-color: rgba(50, 100, 255, 0.4);
+                color: #fff;
             }
 
             .control-group {
@@ -165,7 +219,6 @@
                 margin-bottom: 8px;
                 font-weight: 600;
             }
-
             .slider-row {
                 display: grid;
                 grid-template-columns: 1fr 50px;
@@ -323,7 +376,8 @@
                 animation: fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            #panel-grid-settings {
+            #panel-grid-settings,
+            #panel-blur-settings {
                 max-height: 0;
                 opacity: 0;
                 overflow: hidden;
@@ -333,8 +387,9 @@
                     margin-top 0.3s ease;
                 margin-top: 0;
             }
-            #panel-grid-settings.visible {
-                max-height: 150px;
+            #panel-grid-settings.visible,
+            #panel-blur-settings.visible {
+                max-height: 200px;
                 opacity: 1;
                 margin-top: 12px;
             }
@@ -431,42 +486,6 @@
                 border-color: rgba(255, 255, 255, 0.3);
             }
 
-            .button-group {
-                display: flex;
-                gap: 8px;
-                margin-top: 24px;
-            }
-            .btn-action {
-                flex: 1;
-                padding: 10px 0;
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: rgba(255, 255, 255, 0.8);
-                font-family: inherit;
-                font-size: 10px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            .btn-action:hover {
-                background: rgba(255, 255, 255, 0.15);
-                color: #fff;
-                border-color: rgba(255, 255, 255, 0.3);
-            }
-            #btn-share {
-                background: rgba(50, 100, 255, 0.1);
-                border-color: rgba(50, 100, 255, 0.2);
-                color: #8ab4ff;
-            }
-            #btn-share:hover {
-                background: rgba(50, 100, 255, 0.25);
-                border-color: rgba(50, 100, 255, 0.4);
-                color: #fff;
-            }
-
             .color-picker-large {
                 width: 100%;
                 height: 36px;
@@ -524,250 +543,349 @@
         <button id="ui-toggle" title="Toggle Menu (H)">&times;</button>
 
         <div id="controls">
-            <h3>Parameters</h3>
+            <div id="scroll-content">
+                <h3>Parameters</h3>
 
-            <div class="control-group">
-                <label>Color Theme</label>
-                <select id="theme">
-                    <option value="0">Neon</option>
-                    <option value="6">Gold</option>
-                    <option value="1">Magma</option>
-                    <option value="2">Ocean</option>
-                    <option value="3">Matrix</option>
-                    <option value="4">Grayscale</option>
-                    <option value="7">Custom Monochromatic</option>
-                    <option value="5">Custom Gradient</option>
-                </select>
-            </div>
-
-            <div id="panel-gradient" class="color-panel">
-                <div id="gradient-preview" class="preview-bar"></div>
-                <div id="stops-container"></div>
-                <button id="btn-add-stop">+ Add Stop</button>
-            </div>
-
-            <div id="panel-mono" class="color-panel">
-                <div id="mono-preview" class="preview-bar"></div>
-
-                <label>Base Tint</label>
-                <input
-                    type="color"
-                    id="cMono"
-                    class="color-picker-large"
-                    value="#ff8800"
-                />
-
-                <label>Balance (Midpoint)</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="monoPos"
-                        min="0.01"
-                        max="0.99"
-                        step="0.01"
-                        value="0.7"
-                    />
-                    <input
-                        type="number"
-                        id="num-monoPos"
-                        min="0.01"
-                        max="0.99"
-                        step="0.01"
-                        value="0.7"
-                    />
+                <div class="control-group">
+                    <label>Color Theme</label>
+                    <select id="theme">
+                        <option value="0">Neon</option>
+                        <option value="6">Gold</option>
+                        <option value="1">Magma</option>
+                        <option value="2">Ocean</option>
+                        <option value="3">Matrix</option>
+                        <option value="4">Grayscale</option>
+                        <option value="7">Custom Monochromatic</option>
+                        <option value="5">Custom Gradient</option>
+                    </select>
                 </div>
-            </div>
 
-            <div
-                class="color-panel"
-                style="display: block; padding-bottom: 4px"
-            >
-                <div class="toggle-row">
-                    <label for="showGrid">Overlay Grid</label>
-                    <label class="switch">
-                        <input type="checkbox" id="showGrid" />
-                        <span class="slider"></span>
-                    </label>
+                <div id="panel-gradient" class="color-panel">
+                    <div id="gradient-preview" class="preview-bar"></div>
+                    <div id="stops-container"></div>
+                    <button id="btn-add-stop">+ Add Stop</button>
                 </div>
-                <div id="panel-grid-settings">
-                    <div class="control-group">
-                        <label>Density</label>
-                        <div class="slider-row">
-                            <input
-                                type="range"
-                                id="gridSize"
-                                min="2.0"
-                                max="50.0"
-                                step="1.0"
-                                value="10.0"
-                            />
-                            <input
-                                type="number"
-                                id="num-gridSize"
-                                min="2.0"
-                                max="50.0"
-                                step="1.0"
-                                value="10"
-                            />
-                        </div>
-                    </div>
-                    <div class="control-group" style="margin-bottom: 12px">
-                        <label>Opacity</label>
-                        <div class="slider-row">
-                            <input
-                                type="range"
-                                id="gridAlpha"
-                                min="0.0"
-                                max="1.0"
-                                step="0.05"
-                                value="0.3"
-                            />
-                            <input
-                                type="number"
-                                id="num-gridAlpha"
-                                min="0.0"
-                                max="1.0"
-                                step="0.05"
-                                value="0.3"
-                            />
-                        </div>
+
+                <div id="panel-mono" class="color-panel">
+                    <div id="mono-preview" class="preview-bar"></div>
+                    <label>Base Tint</label>
+                    <input
+                        type="color"
+                        id="cMono"
+                        class="color-picker-large"
+                        value="#ff8800"
+                    />
+                    <label>Balance (Midpoint)</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="monoPos"
+                            min="0.01"
+                            max="0.99"
+                            step="0.01"
+                            value="0.7"
+                        />
+                        <input
+                            type="number"
+                            id="num-monoPos"
+                            min="0.01"
+                            max="0.99"
+                            step="0.01"
+                            value="0.7"
+                        />
                     </div>
                 </div>
-            </div>
 
-            <div class="control-group">
-                <label>Scale</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="scale"
-                        min="0.5"
-                        max="5.0"
-                        step="0.1"
-                        value="1.1"
-                    />
-                    <input
-                        type="number"
-                        id="num-scale"
-                        min="0.5"
-                        max="5.0"
-                        step="0.1"
-                        value="1.1"
-                    />
+                <div
+                    class="color-panel"
+                    style="display: block; padding-bottom: 4px"
+                >
+                    <div class="toggle-row">
+                        <label for="showGrid">Overlay Grid</label>
+                        <label class="switch">
+                            <input type="checkbox" id="showGrid" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="panel-grid-settings">
+                        <div class="control-group">
+                            <label>Density</label>
+                            <div class="slider-row">
+                                <input
+                                    type="range"
+                                    id="gridSize"
+                                    min="2.0"
+                                    max="50.0"
+                                    step="1.0"
+                                    value="10.0"
+                                />
+                                <input
+                                    type="number"
+                                    id="num-gridSize"
+                                    min="2.0"
+                                    max="50.0"
+                                    step="1.0"
+                                    value="10"
+                                />
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom: 12px">
+                            <label>Opacity</label>
+                            <div class="slider-row">
+                                <input
+                                    type="range"
+                                    id="gridAlpha"
+                                    min="0.0"
+                                    max="1.0"
+                                    step="0.05"
+                                    value="0.3"
+                                />
+                                <input
+                                    type="number"
+                                    id="num-gridAlpha"
+                                    min="0.0"
+                                    max="1.0"
+                                    step="0.05"
+                                    value="0.3"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="color-panel"
+                    style="display: block; padding-bottom: 4px"
+                >
+                    <div class="toggle-row">
+                        <label for="showBlur">Blur Spots</label>
+                        <label class="switch">
+                            <input type="checkbox" id="showBlur" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="panel-blur-settings">
+                        <div class="control-group">
+                            <label>Strength</label>
+                            <div class="slider-row">
+                                <input
+                                    type="range"
+                                    id="blurStr"
+                                    min="0.0"
+                                    max="3.0"
+                                    step="0.1"
+                                    value="1.0"
+                                />
+                                <input
+                                    type="number"
+                                    id="num-blurStr"
+                                    min="0.0"
+                                    max="3.0"
+                                    step="0.1"
+                                    value="1.0"
+                                />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Spot Size</label>
+                            <div class="slider-row">
+                                <input
+                                    type="range"
+                                    id="blurSize"
+                                    min="0.5"
+                                    max="3.0"
+                                    step="0.1"
+                                    value="1.0"
+                                />
+                                <input
+                                    type="number"
+                                    id="num-blurSize"
+                                    min="0.5"
+                                    max="3.0"
+                                    step="0.1"
+                                    value="1.0"
+                                />
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom: 12px">
+                            <label>Anim Speed</label>
+                            <div class="slider-row">
+                                <input
+                                    type="range"
+                                    id="blurSpeed"
+                                    min="0.0"
+                                    max="2.0"
+                                    step="0.1"
+                                    value="0.3"
+                                />
+                                <input
+                                    type="number"
+                                    id="num-blurSpeed"
+                                    min="0.0"
+                                    max="2.0"
+                                    step="0.1"
+                                    value="0.3"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Scale</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="scale"
+                            min="0.5"
+                            max="5.0"
+                            step="0.1"
+                            value="1.1"
+                        />
+                        <input
+                            type="number"
+                            id="num-scale"
+                            min="0.5"
+                            max="5.0"
+                            step="0.1"
+                            value="1.1"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Warp Strength</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="warp"
+                            min="0.0"
+                            max="2.0"
+                            step="0.1"
+                            value="0.6"
+                        />
+                        <input
+                            type="number"
+                            id="num-warp"
+                            min="0.0"
+                            max="2.0"
+                            step="0.1"
+                            value="0.6"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Speed</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="speed"
+                            min="0.0"
+                            max="1.0"
+                            step="0.01"
+                            value="0.2"
+                        />
+                        <input
+                            type="number"
+                            id="num-speed"
+                            min="0.0"
+                            max="1.0"
+                            step="0.01"
+                            value="0.2"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Line Thickness</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="thickness"
+                            min="0.1"
+                            max="2.5"
+                            step="0.1"
+                            value="0.9"
+                        />
+                        <input
+                            type="number"
+                            id="num-thickness"
+                            min="0.1"
+                            max="2.5"
+                            step="0.1"
+                            value="0.9"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Brightness</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="brightness"
+                            min="0.5"
+                            max="5.0"
+                            step="0.1"
+                            value="3.0"
+                        />
+                        <input
+                            type="number"
+                            id="num-brightness"
+                            min="0.5"
+                            max="5.0"
+                            step="0.1"
+                            value="3.0"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Chromatic Aberration</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="chromatic"
+                            min="0.0"
+                            max="0.03"
+                            step="0.001"
+                            value="0.003"
+                        />
+                        <input
+                            type="number"
+                            id="num-chromatic"
+                            min="0.0"
+                            max="0.03"
+                            step="0.001"
+                            value="0.003"
+                        />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Grain</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="grain"
+                            min="0.0"
+                            max="0.2"
+                            step="0.01"
+                            value="0.05"
+                        />
+                        <input
+                            type="number"
+                            id="num-grain"
+                            min="0.0"
+                            max="0.2"
+                            step="0.01"
+                            value="0.05"
+                        />
+                    </div>
                 </div>
             </div>
-
-            <div class="control-group">
-                <label>Warp Strength</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="warp"
-                        min="0.0"
-                        max="2.0"
-                        step="0.1"
-                        value="0.6"
-                    />
-                    <input
-                        type="number"
-                        id="num-warp"
-                        min="0.0"
-                        max="2.0"
-                        step="0.1"
-                        value="0.6"
-                    />
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Speed</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="speed"
-                        min="0.0"
-                        max="1.0"
-                        step="0.01"
-                        value="0.2"
-                    />
-                    <input
-                        type="number"
-                        id="num-speed"
-                        min="0.0"
-                        max="1.0"
-                        step="0.01"
-                        value="0.2"
-                    />
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Line Thickness</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="thickness"
-                        min="0.1"
-                        max="2.5"
-                        step="0.1"
-                        value="0.9"
-                    />
-                    <input
-                        type="number"
-                        id="num-thickness"
-                        min="0.1"
-                        max="2.5"
-                        step="0.1"
-                        value="0.9"
-                    />
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Brightness</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="brightness"
-                        min="0.5"
-                        max="5.0"
-                        step="0.1"
-                        value="3.0"
-                    />
-                    <input
-                        type="number"
-                        id="num-brightness"
-                        min="0.5"
-                        max="5.0"
-                        step="0.1"
-                        value="3.0"
-                    />
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Grain</label>
-                <div class="slider-row">
-                    <input
-                        type="range"
-                        id="grain"
-                        min="0.0"
-                        max="0.2"
-                        step="0.01"
-                        value="0.05"
-                    />
-                    <input
-                        type="number"
-                        id="num-grain"
-                        min="0.0"
-                        max="0.2"
-                        step="0.01"
-                        value="0.05"
-                    />
-                </div>
-            </div>
-
-            <div class="button-group">
+            <div class="pinned-footer">
                 <button id="btn-share" class="btn-action">Share</button>
                 <button id="btn-reset" class="btn-action">Reset</button>
             </div>
@@ -841,12 +959,17 @@
                 speed: 0.2,
                 thickness: 0.9,
                 brightness: 3.0,
+                chromatic: 0.003,
                 grain: 0.05,
                 cMono: "#ff8800",
                 monoPos: 0.7,
                 showGrid: false,
                 gridSize: 10.0,
                 gridAlpha: 0.3,
+                showBlur: false,
+                blurStr: 1.0,
+                blurSize: 1.0,
+                blurSpeed: 0.3,
             };
 
             let params = { ...defaults };
@@ -872,6 +995,9 @@
             const panelMono = document.getElementById("panel-mono");
             const panelGridSettings = document.getElementById(
                 "panel-grid-settings",
+            );
+            const panelBlurSettings = document.getElementById(
+                "panel-blur-settings",
             );
             const controlsDiv = document.getElementById("controls");
             const toggleBtn = document.getElementById("ui-toggle");
@@ -1017,10 +1143,18 @@
             };
 
             function updateParam(key, value) {
-                if (key === "showGrid") {
+                if (key === "showGrid" || key === "showBlur") {
                     params[key] = value === "true" || value === true;
-                    if (params[key]) panelGridSettings.classList.add("visible");
-                    else panelGridSettings.classList.remove("visible");
+                    if (key === "showGrid") {
+                        if (params[key])
+                            panelGridSettings.classList.add("visible");
+                        else panelGridSettings.classList.remove("visible");
+                    }
+                    if (key === "showBlur") {
+                        if (params[key])
+                            panelBlurSettings.classList.add("visible");
+                        else panelBlurSettings.classList.remove("visible");
+                    }
                 } else {
                     params[key] = parseFloat(value);
 
@@ -1040,10 +1174,14 @@
                 "speed",
                 "thickness",
                 "brightness",
+                "chromatic",
                 "grain",
                 "gridSize",
                 "gridAlpha",
                 "monoPos",
+                "blurStr",
+                "blurSize",
+                "blurSpeed",
             ].forEach((key) => {
                 const slider = document.getElementById(key);
                 const num = document.getElementById(`num-${key}`);
@@ -1064,6 +1202,12 @@
                     updateParam("showGrid", e.target.checked),
                 );
             }
+            const blurCheck = document.getElementById("showBlur");
+            if (blurCheck) {
+                blurCheck.addEventListener("change", (e) =>
+                    updateParam("showBlur", e.target.checked),
+                );
+            }
 
             document.getElementById("cMono").addEventListener("input", (e) => {
                 params.cMono = e.target.value;
@@ -1077,6 +1221,9 @@
 
                 if (params.showGrid) panelGridSettings.classList.add("visible");
                 else panelGridSettings.classList.remove("visible");
+
+                if (params.showBlur) panelBlurSettings.classList.add("visible");
+                else panelBlurSettings.classList.remove("visible");
             }
 
             themeSelect.addEventListener("change", (e) => {
@@ -1105,7 +1252,7 @@
                 updateURL();
                 navigator.clipboard.writeText(window.location.href).then(() => {
                     const origText = btnShare.innerText;
-                    btnShare.innerText = "Copied!";
+                    btnShare.innerText = "COPIED!";
                     btnShare.style.background = "rgba(46, 204, 113, 0.5)";
                     btnShare.style.borderColor = "rgba(46, 204, 113, 0.8)";
                     btnShare.style.color = "#fff";
@@ -1160,11 +1307,11 @@
     uniform vec2 u_resolution; uniform float u_time;
     uniform int u_theme; uniform float u_scale; uniform float u_warp;
     uniform float u_thickness; uniform float u_brightness; uniform float u_grain;
+    uniform float u_chromatic;
     uniform vec3 u_mono; uniform float u_monoPos;
 
-    uniform float u_showGrid;
-    uniform float u_gridSize;
-    uniform float u_gridAlpha;
+    uniform float u_showGrid; uniform float u_gridSize; uniform float u_gridAlpha;
+    uniform float u_showBlur; uniform float u_blurStr; uniform float u_blurSize; uniform float u_blurSpeed;
 
     uniform int u_stopCount; uniform vec3 u_stopColors[MAX_STOPS]; uniform float u_stopPos[MAX_STOPS];
     out vec4 outColor;
@@ -1305,17 +1452,36 @@
         float r = snoise(warpUV + vec2(q + warpTime, q + warpTime));
         vec2 distortedUV = uv + vec2(q, r) * 0.1;
         distortedUV += offsetScale;
+
         float h = snoise(distortedUV * u_scale + u_time * 0.04);
         h = h * 0.5 + 0.5;
+
         float fadeN = snoise(uv * u_warp - u_time * 0.05);
         fadeN = smoothstep(0.35, 0.65, fadeN * 0.5 + 0.5);
+
         float levels = 16.0;
         float dist = abs(fract(h * levels) - 0.5);
         float fw = fwidth(dist);
-        float line = smoothstep(u_thickness * fw, (u_thickness - 1.5) * fw, dist);
+
+        float blurMask = 0.0;
+        if (u_showBlur > 0.5) {
+            float n = snoise(uv * u_blurSize + u_time * u_blurSpeed);
+            blurMask = smoothstep(0.2, 0.8, n * 0.5 + 0.5);
+        }
+
+        float rim = u_thickness * fw;
+        float soft = (u_thickness + 2.0 + (u_blurStr * 10.0)) * fw;
+
+        float valSharp = 1.0 - smoothstep(rim - 1.5*fw, rim, dist);
+
+        float valBlur = (1.0 - smoothstep(0.0, soft, dist)) * 0.6;
+
+        float line = mix(valSharp, valBlur, blurMask);
+
         float hueShift = u_time * 0.05;
         float effectiveHue = (u_theme >= 3) ? 0.0 : hueShift;
         vec3 color = getPalette(h + effectiveHue, u_theme);
+
         return color * line * fadeN * u_brightness;
     }
 
@@ -1330,7 +1496,8 @@
             bg = mix(bg, vec3(1.0), g * u_gridAlpha);
         }
 
-        float chrAmount = 0.003 + sin(u_time * 0.3) * 0.001;
+        float chrAmount = u_chromatic;
+
         float r = renderScene(uv, vec2(chrAmount, 0.0)).r;
         float g = renderScene(uv, vec2(0.0, 0.0)).g;
         float b = renderScene(uv, vec2(-chrAmount, 0.0)).b;
@@ -1399,11 +1566,16 @@
                 thick: gl.getUniformLocation(program, "u_thickness"),
                 bright: gl.getUniformLocation(program, "u_brightness"),
                 grain: gl.getUniformLocation(program, "u_grain"),
+                chromatic: gl.getUniformLocation(program, "u_chromatic"),
                 mono: gl.getUniformLocation(program, "u_mono"),
                 monoPos: gl.getUniformLocation(program, "u_monoPos"),
                 showGrid: gl.getUniformLocation(program, "u_showGrid"),
                 gridSize: gl.getUniformLocation(program, "u_gridSize"),
                 gridAlpha: gl.getUniformLocation(program, "u_gridAlpha"),
+                showBlur: gl.getUniformLocation(program, "u_showBlur"),
+                blurStr: gl.getUniformLocation(program, "u_blurStr"),
+                blurSize: gl.getUniformLocation(program, "u_blurSize"),
+                blurSpeed: gl.getUniformLocation(program, "u_blurSpeed"),
                 stopCount: gl.getUniformLocation(program, "u_stopCount"),
                 stopColors: gl.getUniformLocation(program, "u_stopColors"),
                 stopPos: gl.getUniformLocation(program, "u_stopPos"),
@@ -1434,12 +1606,18 @@
                 gl.uniform1f(uLocs.thick, params.thickness);
                 gl.uniform1f(uLocs.bright, params.brightness);
                 gl.uniform1f(uLocs.grain, params.grain);
+                gl.uniform1f(uLocs.chromatic, params.chromatic);
                 gl.uniform3fv(uLocs.mono, hexToRgb(params.cMono));
                 gl.uniform1f(uLocs.monoPos, params.monoPos);
 
                 gl.uniform1f(uLocs.showGrid, params.showGrid ? 1.0 : 0.0);
                 gl.uniform1f(uLocs.gridSize, params.gridSize);
                 gl.uniform1f(uLocs.gridAlpha, params.gridAlpha);
+
+                gl.uniform1f(uLocs.showBlur, params.showBlur ? 1.0 : 0.0);
+                gl.uniform1f(uLocs.blurStr, params.blurStr);
+                gl.uniform1f(uLocs.blurSize, params.blurSize);
+                gl.uniform1f(uLocs.blurSpeed, params.blurSpeed);
 
                 const sortedStops = [...customStops].sort(
                     (a, b) => a.pos - b.pos,
