@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Nijiiro</title>
+        <script src="https://unpkg.com/lucide@latest"></script>
         <style>
             * {
                 -webkit-user-select: none;
@@ -96,12 +97,14 @@
                 backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                font-size: 16px;
-                line-height: 1;
             }
             #ui-toggle:hover {
                 background: rgba(255, 255, 255, 0.2);
                 transform: scale(1.05);
+            }
+            #ui-toggle .lucide {
+                width: 18px;
+                height: 18px;
             }
 
             #controls {
@@ -132,7 +135,7 @@
                 transform: translateY(0) scale(1);
                 transform-origin: top right;
                 pointer-events: auto;
-                overflow: hidden; /* Clip children */
+                overflow: hidden;
             }
 
             #controls.hidden {
@@ -141,10 +144,51 @@
                 pointer-events: none;
             }
 
+            .controls-header {
+                flex-shrink: 0;
+                padding: 16px 24px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(0, 0, 0, 0.2);
+            }
+
+            .controls-header h3 {
+                margin: 0;
+                font-size: 12px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            #btn-reset {
+                background: transparent;
+                border: 1px solid transparent;
+                color: rgba(255, 255, 255, 0.5);
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            #btn-reset:hover {
+                color: #ef4444;
+                background: rgba(239, 68, 68, 0.15);
+                border-color: rgba(239, 68, 68, 0.2);
+            }
+            #btn-reset .lucide {
+                width: 14px;
+                height: 14px;
+            }
+
             #scroll-content {
                 flex: 1;
                 overflow-y: auto;
                 padding: 24px;
+                padding-top: 16px;
                 padding-bottom: 10px;
                 scrollbar-gutter: stable;
             }
@@ -169,7 +213,7 @@
                 background: rgba(0, 0, 0, 0.2);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
                 display: flex;
-                gap: 10px;
+                gap: 8px;
             }
 
             .btn-action {
@@ -179,13 +223,22 @@
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 color: rgba(255, 255, 255, 0.8);
                 font-family: inherit;
-                font-size: 10px;
+                font-size: 9px;
                 font-weight: 600;
                 text-transform: uppercase;
-                letter-spacing: 1px;
+                letter-spacing: 0.5px;
                 border-radius: 6px;
                 cursor: pointer;
                 transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+            .btn-action .lucide {
+                width: 14px;
+                height: 14px;
+                stroke-width: 2.5;
             }
             .btn-action:hover {
                 background: rgba(255, 255, 255, 0.15);
@@ -201,6 +254,355 @@
                 background: rgba(50, 100, 255, 0.25);
                 border-color: rgba(50, 100, 255, 0.4);
                 color: #fff;
+            }
+
+            #export-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+            #export-modal.visible {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .modal-content {
+                background: rgba(20, 20, 25, 0.85);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                padding: 0;
+                width: 360px;
+                max-width: 90vw;
+                box-shadow:
+                    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(40px);
+                -webkit-backdrop-filter: blur(40px);
+                overflow: hidden;
+                transform: scale(0.95) translateY(10px);
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            }
+            #export-modal.visible .modal-content {
+                transform: scale(1) translateY(0);
+            }
+            .modal-header {
+                padding: 20px 24px 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .modal-header h2 {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.95);
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .modal-close {
+                background: transparent;
+                border: none;
+                color: rgba(255, 255, 255, 0.4);
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .modal-close .lucide {
+                width: 18px;
+                height: 18px;
+            }
+            .modal-close:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+            .modal-body {
+                padding: 24px;
+            }
+            .export-section {
+                margin-bottom: 24px;
+            }
+            .export-section:last-child {
+                margin-bottom: 0;
+            }
+            .export-section-label {
+                display: block;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: rgba(255, 255, 255, 0.4);
+                margin-bottom: 10px;
+                font-weight: 700;
+            }
+            .export-tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+                padding: 4px;
+                gap: 4px;
+            }
+            .export-tab {
+                padding: 8px;
+                background: transparent;
+                border: none;
+                border-radius: 8px;
+                color: rgba(255, 255, 255, 0.6);
+                font-family: inherit;
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+            .export-tab .lucide {
+                width: 16px;
+                height: 16px;
+                opacity: 0.6;
+                transition: opacity 0.2s;
+                stroke-width: 2.5;
+            }
+            .export-tab:hover {
+                color: rgba(255, 255, 255, 0.9);
+                background: rgba(255, 255, 255, 0.05);
+            }
+            .export-tab.active {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+            .export-tab.active .lucide {
+                opacity: 1;
+            }
+
+            .resolution-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .res-option {
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 8px;
+                color: rgba(255, 255, 255, 0.6);
+                font-family: inherit;
+                font-size: 10px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                align-items: center;
+                justify-content: center;
+            }
+            .res-option:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+            }
+            .res-option.selected {
+                background: rgba(60, 110, 255, 0.15);
+                border-color: rgba(60, 110, 255, 0.4);
+                color: #fff;
+            }
+            .res-option .res-label {
+                font-weight: 700;
+                font-size: 12px;
+            }
+            .res-option .res-size {
+                font-size: 9px;
+                opacity: 0.5;
+                font-family: monospace;
+            }
+
+            #custom-res-inputs {
+                display: none;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                animation: fadeIn 0.2s ease;
+            }
+            #custom-res-inputs.visible {
+                display: grid;
+            }
+
+            .video-settings {
+                display: none;
+                gap: 12px;
+                margin-top: 24px;
+                padding-top: 24px;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                animation: fadeIn 0.3s ease;
+            }
+            .video-settings.visible {
+                display: flex;
+            }
+            .setting-field {
+                flex: 1;
+            }
+            .setting-field label {
+                display: block;
+                font-size: 9px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: rgba(255, 255, 255, 0.5);
+                margin-bottom: 6px;
+                font-weight: 700;
+            }
+            .styled-input {
+                width: 100%;
+                padding: 10px 12px;
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                color: #fff;
+                font-family: inherit;
+                font-size: 12px;
+                cursor: text;
+                outline: none;
+                transition: all 0.2s;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .styled-input:hover {
+                border-color: rgba(255, 255, 255, 0.25);
+                background: rgba(0, 0, 0, 0.4);
+            }
+            .styled-input:focus {
+                border-color: #fff;
+                background: rgba(0, 0, 0, 0.5);
+                box-shadow:
+                    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.1);
+            }
+            select.styled-input {
+                cursor: pointer;
+                -webkit-appearance: none;
+                appearance: none;
+                background-image:
+                    linear-gradient(45deg, transparent 50%, white 50%),
+                    linear-gradient(135deg, white 50%, transparent 50%);
+                background-position:
+                    calc(100% - 15px) calc(1em + 2px),
+                    calc(100% - 10px) calc(1em + 2px);
+                background-size:
+                    5px 5px,
+                    5px 5px;
+                background-repeat: no-repeat;
+            }
+
+            .modal-footer {
+                padding: 20px 24px 24px;
+                background: rgba(0, 0, 0, 0.2);
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .btn-export-primary {
+                width: 100%;
+                padding: 14px;
+                background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+                border: none;
+                border-radius: 10px;
+                color: #000;
+                font-family: inherit;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            }
+            .btn-export-primary .lucide {
+                width: 16px;
+                height: 16px;
+                stroke-width: 2.5;
+            }
+            .btn-export-primary:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+            }
+            .btn-export-primary:active {
+                transform: translateY(0);
+            }
+            .btn-export-primary:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+            .btn-export-primary.recording {
+                background: #ef4444;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+            .btn-export-primary.recording:hover {
+                background: #dc2626;
+            }
+            .btn-export-primary.success {
+                background: #22c55e;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            }
+            .btn-export-primary.error {
+                background: #ef4444;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+            .btn-export-primary .spin {
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .progress-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                height: 3px;
+                background: rgba(0, 0, 0, 0.2);
+                width: 100%;
+                display: none;
+            }
+            .btn-export-primary.recording .progress-overlay {
+                background: rgba(255, 255, 255, 0.3);
+                display: block;
+            }
+            .progress-fill {
+                height: 100%;
+                background: rgba(255, 255, 255, 0.9);
+                width: 0%;
+                transition: width 0.2s linear;
+            }
+            .btn-export-primary.recording .progress-fill {
+                background: #fff;
             }
 
             .control-group {
@@ -354,16 +756,6 @@
             option {
                 background: #111;
                 color: #fff;
-            }
-
-            h3 {
-                margin: 0 0 20px 0;
-                font-size: 12px;
-                letter-spacing: 3px;
-                text-transform: uppercase;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding-bottom: 12px;
-                color: rgba(255, 255, 255, 0.9);
             }
 
             .color-panel {
@@ -540,12 +932,23 @@
             </defs>
         </svg>
 
-        <button id="ui-toggle" title="Toggle Menu (H)">&times;</button>
+        <button id="ui-toggle" title="Toggle Menu (H)">
+            <i data-lucide="x"></i>
+        </button>
 
         <div id="controls">
-            <div id="scroll-content">
+            <div class="controls-header">
                 <h3>Parameters</h3>
+                <button
+                    id="btn-reset"
+                    class="btn-icon"
+                    title="Reset Parameters"
+                >
+                    <i data-lucide="rotate-ccw"></i>
+                </button>
+            </div>
 
+            <div id="scroll-content">
                 <div class="control-group">
                     <label>Color Theme</label>
                     <select id="theme">
@@ -886,12 +1289,150 @@
                 </div>
             </div>
             <div class="pinned-footer">
-                <button id="btn-share" class="btn-action">Share</button>
-                <button id="btn-reset" class="btn-action">Reset</button>
+                <button id="btn-share" class="btn-action">
+                    <i data-lucide="download"></i>
+                    Export
+                </button>
+                <button id="btn-copy-link" class="btn-action">
+                    <i data-lucide="share-2"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+
+        <div id="export-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Export</h2>
+                    <button class="modal-close" id="btn-close-modal">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="export-section">
+                        <div class="export-section-label">Format</div>
+                        <div class="export-tabs">
+                            <button class="export-tab active" data-format="png">
+                                <i data-lucide="image"></i>
+                                PNG
+                            </button>
+                            <button class="export-tab" data-format="video">
+                                <i data-lucide="video"></i>
+                                Video
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="export-section">
+                        <div class="export-section-label">Resolution</div>
+                        <div class="resolution-grid">
+                            <button class="res-option" data-res="1280x720">
+                                <div class="res-label">720p</div>
+                                <div class="res-size">1280×720</div>
+                            </button>
+                            <button
+                                class="res-option selected"
+                                data-res="1920x1080"
+                            >
+                                <div class="res-label">1080p</div>
+                                <div class="res-size">1920×1080</div>
+                            </button>
+                            <button class="res-option" data-res="2560x1440">
+                                <div class="res-label">1440p</div>
+                                <div class="res-size">2560×1440</div>
+                            </button>
+                            <button class="res-option" data-res="3840x2160">
+                                <div class="res-label">4K</div>
+                                <div class="res-size">3840×2160</div>
+                            </button>
+                            <button
+                                class="res-option"
+                                data-res="custom"
+                                style="grid-column: span 2"
+                            >
+                                <div class="res-label">Custom</div>
+                                <div class="res-size">-- x --</div>
+                            </button>
+                        </div>
+                        <div id="custom-res-inputs">
+                            <div class="setting-field">
+                                <label>Width</label>
+                                <input
+                                    type="number"
+                                    id="custom-width"
+                                    class="styled-input"
+                                    value="1920"
+                                    min="100"
+                                    max="7680"
+                                />
+                            </div>
+                            <div class="setting-field">
+                                <label>Height</label>
+                                <input
+                                    type="number"
+                                    id="custom-height"
+                                    class="styled-input"
+                                    value="1080"
+                                    min="100"
+                                    max="4320"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-settings" id="video-options">
+                        <div class="setting-field">
+                            <label>Duration (Seconds)</label>
+                            <input
+                                type="number"
+                                id="export-duration"
+                                class="styled-input"
+                                value="5"
+                                min="1"
+                                max="120"
+                            />
+                        </div>
+                        <div class="setting-field">
+                            <label>Frame Rate (FPS)</label>
+                            <input
+                                type="number"
+                                id="export-fps"
+                                class="styled-input"
+                                value="60"
+                                min="1"
+                                max="120"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-export-primary" id="btn-do-export">
+                        <div class="progress-overlay" id="export-progress">
+                            <div
+                                class="progress-fill"
+                                id="export-progress-fill"
+                            ></div>
+                        </div>
+                        <i data-lucide="download"></i>
+                        <span>Export PNG</span>
+                    </button>
+                </div>
             </div>
         </div>
 
         <script>
+            function renderIcons() {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                renderIcons();
+            });
+
             function hexToRgb(hex) {
                 const bigint = parseInt(hex.slice(1), 16);
                 const r = ((bigint >> 16) & 255) / 255;
@@ -1236,31 +1777,35 @@
                 uiVisible = !uiVisible;
                 if (uiVisible) {
                     controlsDiv.classList.remove("hidden");
-                    toggleBtn.innerHTML = "&times;";
+                    toggleBtn.innerHTML = '<i data-lucide="x"></i>';
                 } else {
                     controlsDiv.classList.add("hidden");
-                    toggleBtn.innerHTML = "&#9776;";
+                    toggleBtn.innerHTML = '<i data-lucide="menu"></i>';
                 }
+                renderIcons();
             }
             toggleBtn.addEventListener("click", toggleUI);
             window.addEventListener("keydown", (e) => {
                 if (e.key.toLowerCase() === "h") toggleUI();
             });
 
-            const btnShare = document.getElementById("btn-share");
-            btnShare.addEventListener("click", () => {
+            const btnCopyLink = document.getElementById("btn-copy-link");
+            btnCopyLink.addEventListener("click", () => {
                 updateURL();
                 navigator.clipboard.writeText(window.location.href).then(() => {
-                    const origText = btnShare.innerText;
-                    btnShare.innerText = "COPIED!";
-                    btnShare.style.background = "rgba(46, 204, 113, 0.5)";
-                    btnShare.style.borderColor = "rgba(46, 204, 113, 0.8)";
-                    btnShare.style.color = "#fff";
+                    const origText = "Share";
+                    btnCopyLink.innerHTML = `<i data-lucide="check"></i> Copied!`;
+                    renderIcons();
+                    btnCopyLink.style.background = "rgba(46, 204, 113, 0.5)";
+                    btnCopyLink.style.borderColor = "rgba(46, 204, 113, 0.8)";
+                    btnCopyLink.style.color = "#fff";
                     setTimeout(() => {
-                        btnShare.innerText = origText;
-                        btnShare.style.background = "";
-                        btnShare.style.borderColor = "";
-                        btnShare.style.color = "";
+                        btnCopyLink.innerHTML =
+                            '<i data-lucide="share-2"></i> Share';
+                        renderIcons();
+                        btnCopyLink.style.background = "";
+                        btnCopyLink.style.borderColor = "";
+                        btnCopyLink.style.color = "";
                     }, 1500);
                 });
             });
@@ -1386,7 +1931,7 @@
     vec3 paletteGold(float t) {
         t = fract(t);
         vec3 c0 = vec3(0.15, 0.08, 0.0); vec3 c1 = vec3(0.4, 0.25, 0.05);
-        vec3 c2 = vec3(0.8, 0.6, 0.2);   vec3 c3 = vec3(1.0, 0.9, 0.5);
+        vec3 c2 = vec3(0.8, 0.6, 0.2);    vec3 c3 = vec3(1.0, 0.9, 0.5);
         vec3 c4 = vec3(1.0, 1.0, 0.9);
         if(t<0.25) return mix(c0,c1,t/0.25); if(t<0.50) return mix(c1,c2,(t-0.25)/0.25);
         if(t<0.75) return mix(c2,c3,(t-0.50)/0.25); return mix(c3,c4,(t-0.75)/0.25);
@@ -1636,6 +2181,464 @@
                 requestAnimationFrame(render);
             }
             requestAnimationFrame(render);
+
+            const exportModal = document.getElementById("export-modal");
+            const btnExport = document.getElementById("btn-share");
+            const btnCloseModal = document.getElementById("btn-close-modal");
+            const btnDoExport = document.getElementById("btn-do-export");
+            const videoOptions = document.getElementById("video-options");
+            const progressOverlay = document.getElementById("export-progress");
+            const progressFill = document.getElementById(
+                "export-progress-fill",
+            );
+            const customResInputs =
+                document.getElementById("custom-res-inputs");
+
+            let selectedFormat = "png";
+            let selectedRes = "1920x1080";
+            let isRecording = false;
+            let mediaRecorder = null;
+            let recordedChunks = [];
+
+            function updateExportButton(icon, text, recording = false) {
+                const overlay = `<div class="progress-overlay" id="export-progress" style="display: ${recording ? "block" : "none"}"><div class="progress-fill" id="export-progress-fill" style="width: 0%"></div></div>`;
+                btnDoExport.innerHTML = `${overlay}<i data-lucide="${icon}"></i><span>${text}</span>`;
+                btnDoExport.classList.toggle("recording", recording);
+
+                const newFill = document.getElementById("export-progress-fill");
+                if (newFill) {
+                    newFill.style.width =
+                        document.getElementById("export-progress-fill")?.style
+                            .width || "0%";
+                }
+                renderIcons();
+            }
+
+            function setStatus(text, type = "", showSpinner = false) {
+                btnDoExport.classList.remove("recording", "success", "error");
+
+                if (type === "success") {
+                    btnDoExport.classList.add("success");
+                    btnDoExport.innerHTML = `<i data-lucide="check"></i><span>${text}</span>`;
+                } else if (type === "error") {
+                    btnDoExport.classList.add("error");
+                    btnDoExport.innerHTML = `<i data-lucide="alert-circle"></i><span>${text}</span>`;
+                } else if (showSpinner) {
+                    const overlay = `<div class="progress-overlay" id="export-progress" style="display: block"><div class="progress-fill" id="export-progress-fill" style="width: 0%"></div></div>`;
+                    btnDoExport.innerHTML = `${overlay}<i data-lucide="loader-2" class="spin"></i><span>${text}</span>`;
+                } else {
+                }
+                renderIcons();
+            }
+
+            function setProgress(percent, visible = true) {
+                const fill = document.getElementById("export-progress-fill");
+                const overlay = document.getElementById("export-progress");
+                if (overlay) overlay.style.display = visible ? "block" : "none";
+                if (fill) fill.style.width = `${percent}%`;
+            }
+
+            btnExport.onclick = () => {
+                exportModal.classList.add("visible");
+                if (selectedFormat === "png") {
+                    updateExportButton("download", "Export PNG");
+                } else {
+                    updateExportButton("video", "Start Recording");
+                }
+                btnDoExport.classList.remove("success", "error");
+                setProgress(0, false);
+            };
+
+            btnCloseModal.onclick = () => {
+                if (isRecording) {
+                    stopRecording();
+                }
+                exportModal.classList.remove("visible");
+            };
+
+            exportModal.onclick = (e) => {
+                if (e.target === exportModal && !isRecording) {
+                    exportModal.classList.remove("visible");
+                }
+            };
+
+            document.addEventListener("keydown", (e) => {
+                if (
+                    e.key === "Escape" &&
+                    exportModal.classList.contains("visible") &&
+                    !isRecording
+                ) {
+                    exportModal.classList.remove("visible");
+                }
+            });
+
+            document.querySelectorAll(".export-tab").forEach((btn) => {
+                btn.onclick = () => {
+                    document
+                        .querySelectorAll(".export-tab")
+                        .forEach((b) => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    selectedFormat = btn.dataset.format;
+
+                    videoOptions.classList.toggle(
+                        "visible",
+                        selectedFormat === "video",
+                    );
+
+                    btnDoExport.classList.remove("success", "error");
+
+                    if (selectedFormat === "png") {
+                        updateExportButton("download", "Export PNG");
+                    } else if (selectedFormat === "video") {
+                        updateExportButton("video", "Start Recording");
+                    }
+                };
+            });
+
+            document.querySelectorAll(".res-option").forEach((btn) => {
+                btn.onclick = () => {
+                    document
+                        .querySelectorAll(".res-option")
+                        .forEach((b) => b.classList.remove("selected"));
+                    btn.classList.add("selected");
+                    selectedRes = btn.dataset.res;
+
+                    if (selectedRes === "custom") {
+                        customResInputs.classList.add("visible");
+                    } else {
+                        customResInputs.classList.remove("visible");
+                    }
+                };
+            });
+
+            function getExportDimensions() {
+                if (selectedRes === "custom") {
+                    const w =
+                        parseInt(
+                            document.getElementById("custom-width").value,
+                        ) || 1920;
+                    const h =
+                        parseInt(
+                            document.getElementById("custom-height").value,
+                        ) || 1080;
+                    return [w, h];
+                }
+                return selectedRes.split("x").map(Number);
+            }
+
+            btnDoExport.onclick = () => {
+                if (selectedFormat === "png") {
+                    exportPNG();
+                } else if (selectedFormat === "video") {
+                    if (isRecording) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
+                }
+            };
+
+            function exportPNG() {
+                setStatus("Rendering...", "", true);
+                setProgress(30, true);
+
+                const [w, h] = getExportDimensions();
+
+                setTimeout(() => {
+                    const offCanvas = document.createElement("canvas");
+                    offCanvas.width = w;
+                    offCanvas.height = h;
+                    const offGl = offCanvas.getContext("webgl2", {
+                        antialias: false,
+                        preserveDrawingBuffer: true,
+                    });
+
+                    if (!offGl) {
+                        setStatus("WebGL 2 not available", "error");
+                        setProgress(0, false);
+                        return;
+                    }
+
+                    setProgress(50, true);
+
+                    const offProgram = offGl.createProgram();
+                    offGl.attachShader(
+                        offProgram,
+                        createShaderForContext(
+                            offGl,
+                            offGl.VERTEX_SHADER,
+                            vsSource,
+                        ),
+                    );
+                    offGl.attachShader(
+                        offProgram,
+                        createShaderForContext(
+                            offGl,
+                            offGl.FRAGMENT_SHADER,
+                            fsSource,
+                        ),
+                    );
+                    offGl.linkProgram(offProgram);
+
+                    const offPosBuffer = offGl.createBuffer();
+                    offGl.bindBuffer(offGl.ARRAY_BUFFER, offPosBuffer);
+                    offGl.bufferData(
+                        offGl.ARRAY_BUFFER,
+                        new Float32Array([-1, 1, 1, 1, -1, -1, 1, -1]),
+                        offGl.STATIC_DRAW,
+                    );
+                    offGl.enableVertexAttribArray(
+                        offGl.getAttribLocation(offProgram, "position"),
+                    );
+                    offGl.vertexAttribPointer(
+                        offGl.getAttribLocation(offProgram, "position"),
+                        2,
+                        offGl.FLOAT,
+                        false,
+                        0,
+                        0,
+                    );
+
+                    const offULocs = {
+                        res: offGl.getUniformLocation(
+                            offProgram,
+                            "u_resolution",
+                        ),
+                        time: offGl.getUniformLocation(offProgram, "u_time"),
+                        theme: offGl.getUniformLocation(offProgram, "u_theme"),
+                        scale: offGl.getUniformLocation(offProgram, "u_scale"),
+                        warp: offGl.getUniformLocation(offProgram, "u_warp"),
+                        thick: offGl.getUniformLocation(
+                            offProgram,
+                            "u_thickness",
+                        ),
+                        bright: offGl.getUniformLocation(
+                            offProgram,
+                            "u_brightness",
+                        ),
+                        grain: offGl.getUniformLocation(offProgram, "u_grain"),
+                        chromatic: offGl.getUniformLocation(
+                            offProgram,
+                            "u_chromatic",
+                        ),
+                        mono: offGl.getUniformLocation(offProgram, "u_mono"),
+                        monoPos: offGl.getUniformLocation(
+                            offProgram,
+                            "u_monoPos",
+                        ),
+                        showGrid: offGl.getUniformLocation(
+                            offProgram,
+                            "u_showGrid",
+                        ),
+                        gridSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_gridSize",
+                        ),
+                        gridAlpha: offGl.getUniformLocation(
+                            offProgram,
+                            "u_gridAlpha",
+                        ),
+                        showBlur: offGl.getUniformLocation(
+                            offProgram,
+                            "u_showBlur",
+                        ),
+                        blurStr: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurStr",
+                        ),
+                        blurSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurSize",
+                        ),
+                        blurSpeed: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurSpeed",
+                        ),
+                        stopCount: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopCount",
+                        ),
+                        stopColors: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopColors",
+                        ),
+                        stopPos: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopPos",
+                        ),
+                    };
+
+                    setProgress(70, true);
+
+                    offGl.viewport(0, 0, w, h);
+                    offGl.useProgram(offProgram);
+                    offGl.uniform2f(offULocs.res, w, h);
+                    offGl.uniform1f(offULocs.time, timeAccumulator * 0.001);
+                    offGl.uniform1i(offULocs.theme, params.theme);
+                    offGl.uniform1f(offULocs.scale, params.scale);
+                    offGl.uniform1f(offULocs.warp, params.warp);
+                    offGl.uniform1f(offULocs.thick, params.thickness);
+                    offGl.uniform1f(offULocs.bright, params.brightness);
+                    offGl.uniform1f(offULocs.grain, params.grain);
+                    offGl.uniform1f(offULocs.chromatic, params.chromatic);
+                    offGl.uniform3fv(offULocs.mono, hexToRgb(params.cMono));
+                    offGl.uniform1f(offULocs.monoPos, params.monoPos);
+                    offGl.uniform1f(
+                        offULocs.showGrid,
+                        params.showGrid ? 1.0 : 0.0,
+                    );
+                    offGl.uniform1f(offULocs.gridSize, params.gridSize);
+                    offGl.uniform1f(offULocs.gridAlpha, params.gridAlpha);
+                    offGl.uniform1f(
+                        offULocs.showBlur,
+                        params.showBlur ? 1.0 : 0.0,
+                    );
+                    offGl.uniform1f(offULocs.blurStr, params.blurStr);
+                    offGl.uniform1f(offULocs.blurSize, params.blurSize);
+                    offGl.uniform1f(offULocs.blurSpeed, params.blurSpeed);
+
+                    const sortedStops = [...customStops].sort(
+                        (a, b) => a.pos - b.pos,
+                    );
+                    const flatColors = [];
+                    const flatPos = [];
+                    sortedStops.forEach((s) => {
+                        flatColors.push(...hexToRgb(s.color));
+                        flatPos.push(s.pos);
+                    });
+                    offGl.uniform1i(offULocs.stopCount, sortedStops.length);
+                    offGl.uniform3fv(
+                        offULocs.stopColors,
+                        new Float32Array(flatColors),
+                    );
+                    offGl.uniform1fv(
+                        offULocs.stopPos,
+                        new Float32Array(flatPos),
+                    );
+
+                    offGl.drawArrays(offGl.TRIANGLE_STRIP, 0, 4);
+
+                    setProgress(90, true);
+
+                    offCanvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `nijiiro-${Date.now()}.png`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+
+                        setProgress(100, true);
+                        setTimeout(() => {
+                            setStatus("Saved!", "success");
+                            setProgress(0, false);
+
+                            setTimeout(() => {
+                                btnDoExport.classList.remove("success");
+                                updateExportButton("download", "Export PNG");
+                            }, 2000);
+                        }, 500);
+                    }, "image/png");
+                }, 50);
+            }
+
+            function createShaderForContext(glCtx, type, source) {
+                const shader = glCtx.createShader(type);
+                glCtx.shaderSource(shader, source.trim());
+                glCtx.compileShader(shader);
+                return shader;
+            }
+
+            function startRecording() {
+                const [w, h] = getExportDimensions();
+                const fps =
+                    parseInt(document.getElementById("export-fps").value) || 60;
+                const duration =
+                    parseInt(
+                        document.getElementById("export-duration").value,
+                    ) || 5;
+
+                const originalWidth = canvas.width;
+                const originalHeight = canvas.height;
+                canvas.width = w;
+                canvas.height = h;
+                gl.viewport(0, 0, w, h);
+
+                recordedChunks = [];
+
+                const stream = canvas.captureStream(fps);
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: "video/webm;codecs=vp9",
+                    videoBitsPerSecond: 8000000,
+                });
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, {
+                        type: "video/webm",
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `nijiiro-${Date.now()}.webm`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    canvas.width = originalWidth;
+                    canvas.height = originalHeight;
+                    gl.viewport(0, 0, originalWidth, originalHeight);
+
+                    setStatus("Saved!", "success");
+                    setProgress(0, false);
+                    isRecording = false;
+
+                    setTimeout(() => {
+                        btnDoExport.classList.remove("success");
+                        updateExportButton("video", "Start Recording");
+                    }, 2000);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                updateExportButton("square", `Stop (${duration}s)`, true);
+                setStatus(`Recording...`, "", true);
+                setProgress(0, true);
+
+                let elapsed = 0;
+                const countdown = setInterval(() => {
+                    elapsed++;
+                    const percent = (elapsed / duration) * 100;
+                    setProgress(percent, true);
+
+                    const remaining = duration - elapsed;
+                    if (remaining >= 0) {
+                        const span = btnDoExport.querySelector("span");
+                        if (span) span.innerText = `Stop (${remaining}s)`;
+                    }
+
+                    if (elapsed >= duration) {
+                        clearInterval(countdown);
+                        stopRecording();
+                    }
+                }, 1000);
+
+                mediaRecorder.countdownInterval = countdown;
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                    if (mediaRecorder.countdownInterval) {
+                        clearInterval(mediaRecorder.countdownInterval);
+                    }
+                    mediaRecorder.stop();
+                }
+            }
         </script>
     </body>
 </html>
