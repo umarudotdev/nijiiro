@@ -6,6 +6,18 @@
         <title>Nijiiro</title>
         <script src="https://unpkg.com/lucide@latest"></script>
         <style>
+            :root {
+                --bg-glass: rgba(15, 15, 20, 0.4);
+                --bg-input: rgba(0, 0, 0, 0.3);
+                --bg-input-hover: rgba(0, 0, 0, 0.4);
+                --bg-input-focus: rgba(0, 0, 0, 0.5);
+                --border-light: rgba(255, 255, 255, 0.1);
+                --border-hover: rgba(255, 255, 255, 0.25);
+                --text-muted: rgba(255, 255, 255, 0.5);
+                --text-main: #eee;
+                --primary: #fff;
+            }
+
             * {
                 -webkit-user-select: none;
                 -moz-user-select: none;
@@ -85,7 +97,7 @@
                 right: 20px;
                 z-index: 100;
                 background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                border: 1px solid var(--border-light);
                 color: #fff;
                 width: 36px;
                 height: 36px;
@@ -116,10 +128,10 @@
                 display: flex;
                 flex-direction: column;
 
-                background: rgba(15, 15, 20, 0.4);
+                background: var(--bg-glass);
                 border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: #eee;
+                border: 1px solid var(--border-light);
+                color: var(--text-main);
                 z-index: 90;
                 box-shadow:
                     0 20px 40px rgba(0, 0, 0, 0.4),
@@ -147,7 +159,7 @@
             .controls-header {
                 flex-shrink: 0;
                 padding: 16px 24px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid var(--border-light);
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -211,7 +223,7 @@
                 flex-shrink: 0;
                 padding: 16px 24px;
                 background: rgba(0, 0, 0, 0.2);
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: 1px solid var(--border-light);
                 display: flex;
                 gap: 8px;
             }
@@ -220,7 +232,7 @@
                 flex: 1;
                 padding: 10px 0;
                 background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                border: 1px solid var(--border-light);
                 color: rgba(255, 255, 255, 0.8);
                 font-family: inherit;
                 font-size: 9px;
@@ -256,6 +268,7 @@
                 color: #fff;
             }
 
+            /* Export Modal Styles */
             #export-modal {
                 position: fixed;
                 top: 0;
@@ -277,7 +290,7 @@
             }
             .modal-content {
                 background: rgba(20, 20, 25, 0.85);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                border: 1px solid var(--border-light);
                 border-radius: 20px;
                 padding: 0;
                 width: 360px;
@@ -469,32 +482,33 @@
                 margin-bottom: 6px;
                 font-weight: 700;
             }
+
+            /* --- Improved Input Styling --- */
+            input[type="number"],
+            select,
             .styled-input {
                 width: 100%;
-                padding: 10px 12px;
-                background: rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
+                padding: 8px 10px;
+                background-color: var(--bg-input);
+                border: 1px solid var(--border-light);
+                border-radius: 6px;
                 color: #fff;
-                font-family: inherit;
-                font-size: 12px;
+                font-family:
+                    "SF Mono", "Segoe UI Mono", "Roboto Mono", monospace;
+                font-size: 11px;
                 cursor: text;
                 outline: none;
-                transition: all 0.2s;
-                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition:
+                    border-color 0.2s,
+                    background-color 0.2s,
+                    box-shadow 0.2s;
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
             }
-            .styled-input:hover {
-                border-color: rgba(255, 255, 255, 0.25);
-                background: rgba(0, 0, 0, 0.4);
-            }
-            .styled-input:focus {
-                border-color: #fff;
-                background: rgba(0, 0, 0, 0.5);
-                box-shadow:
-                    inset 0 2px 4px rgba(0, 0, 0, 0.3),
-                    0 0 0 1px rgba(255, 255, 255, 0.1);
-            }
-            select.styled-input {
+
+            select {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Helvetica, Arial, sans-serif;
                 cursor: pointer;
                 -webkit-appearance: none;
                 appearance: none;
@@ -502,12 +516,39 @@
                     linear-gradient(45deg, transparent 50%, white 50%),
                     linear-gradient(135deg, white 50%, transparent 50%);
                 background-position:
-                    calc(100% - 15px) calc(1em + 2px),
-                    calc(100% - 10px) calc(1em + 2px);
+                    calc(100% - 14px) calc(50%),
+                    calc(100% - 9px) calc(50%);
                 background-size:
                     5px 5px,
                     5px 5px;
                 background-repeat: no-repeat;
+            }
+
+            input[type="number"]:hover,
+            select:hover,
+            .styled-input:hover {
+                border-color: var(--border-hover);
+                background-color: var(--bg-input-hover);
+            }
+
+            input[type="number"]:focus,
+            select:focus,
+            .styled-input:focus {
+                border-color: rgba(255, 255, 255, 0.6);
+                background-color: var(--bg-input-focus);
+                box-shadow:
+                    inset 0 2px 5px rgba(0, 0, 0, 0.3),
+                    0 0 0 2px rgba(255, 255, 255, 0.05);
+            }
+
+            /* Remove spinners */
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield;
             }
 
             .modal-footer {
@@ -519,10 +560,10 @@
             .btn-export-primary {
                 width: 100%;
                 padding: 14px;
-                background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
-                border: none;
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: 10px;
-                color: #000;
+                color: #fff;
                 font-family: inherit;
                 font-size: 11px;
                 font-weight: 700;
@@ -536,7 +577,7 @@
                 gap: 8px;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             }
             .btn-export-primary .lucide {
                 width: 16px;
@@ -544,8 +585,9 @@
                 stroke-width: 2.5;
             }
             .btn-export-primary:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
                 transform: translateY(-1px);
-                box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
             }
             .btn-export-primary:active {
                 transform: translateY(0);
@@ -556,22 +598,26 @@
                 transform: none;
             }
             .btn-export-primary.recording {
-                background: #ef4444;
-                color: #fff;
-                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                background: rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.5);
+                color: #fca5a5;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
             }
             .btn-export-primary.recording:hover {
-                background: #dc2626;
+                background: rgba(239, 68, 68, 0.3);
+                border-color: rgba(239, 68, 68, 0.8);
             }
             .btn-export-primary.success {
-                background: #22c55e;
-                color: #fff;
-                box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+                background: rgba(34, 197, 94, 0.2);
+                border-color: rgba(34, 197, 94, 0.5);
+                color: #86efac;
+                box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
             }
             .btn-export-primary.error {
-                background: #ef4444;
-                color: #fff;
-                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                background: rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.5);
+                color: #fca5a5;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
             }
             .btn-export-primary .spin {
                 animation: spin 1s linear infinite;
@@ -592,17 +638,17 @@
                 display: none;
             }
             .btn-export-primary.recording .progress-overlay {
-                background: rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.1);
                 display: block;
             }
             .progress-fill {
                 height: 100%;
-                background: rgba(255, 255, 255, 0.9);
+                background: rgba(239, 68, 68, 0.8);
                 width: 0%;
                 transition: width 0.2s linear;
             }
             .btn-export-primary.recording .progress-fill {
-                background: #fff;
+                background: #ef4444;
             }
 
             .control-group {
@@ -658,29 +704,6 @@
                 transform: scale(1.2);
             }
 
-            input[type="number"] {
-                width: 100%;
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: #fff;
-                border-radius: 4px;
-                font-family: inherit;
-                font-size: 11px;
-                padding: 4px;
-                text-align: center;
-                -moz-appearance: textfield;
-                user-select: text !important;
-                -webkit-user-select: text !important;
-                transition:
-                    border-color 0.2s,
-                    background 0.2s;
-            }
-            input[type="number"]:focus {
-                border-color: rgba(255, 255, 255, 0.4);
-                outline: none;
-                background: rgba(255, 255, 255, 0.1);
-            }
-
             .toggle-row {
                 display: flex;
                 justify-content: space-between;
@@ -732,30 +755,6 @@
             input:checked + .slider:before {
                 transform: translateX(14px);
                 background-color: #fff;
-            }
-
-            select {
-                width: 100%;
-                background: rgba(0, 0, 0, 0.3);
-                color: #fff;
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                padding: 10px;
-                border-radius: 8px;
-                font-family: inherit;
-                font-size: 13px;
-                cursor: pointer;
-                outline: none;
-                transition:
-                    border-color 0.2s,
-                    background 0.2s;
-            }
-            select:hover {
-                border-color: rgba(255, 255, 255, 0.3);
-                background: rgba(0, 0, 0, 0.5);
-            }
-            option {
-                background: #111;
-                color: #fff;
             }
 
             .color-panel {
@@ -1287,6 +1286,49 @@
                         />
                     </div>
                 </div>
+
+                <div class="control-group">
+                    <label>Scan Lines</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="scanLines"
+                            min="0.0"
+                            max="1.0"
+                            step="0.01"
+                            value="0.0"
+                        />
+                        <input
+                            type="number"
+                            id="num-scanLines"
+                            min="0.0"
+                            max="1.0"
+                            step="0.01"
+                            value="0.0"
+                        />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Scan Line Size</label>
+                    <div class="slider-row">
+                        <input
+                            type="range"
+                            id="scanLineSize"
+                            min="2.0"
+                            max="20.0"
+                            step="1.0"
+                            value="2.0"
+                        />
+                        <input
+                            type="number"
+                            id="num-scanLineSize"
+                            min="2.0"
+                            max="20.0"
+                            step="1.0"
+                            value="2.0"
+                        />
+                    </div>
+                </div>
             </div>
             <div class="pinned-footer">
                 <button id="btn-share" class="btn-action">
@@ -1416,7 +1458,7 @@
                             ></div>
                         </div>
                         <i data-lucide="download"></i>
-                        <span>Export PNG</span>
+                        <span>Export</span>
                     </button>
                 </div>
             </div>
@@ -1502,6 +1544,8 @@
                 brightness: 3.0,
                 chromatic: 0.003,
                 grain: 0.05,
+                scanLines: 0.0,
+                scanLineSize: 2.0,
                 cMono: "#ff8800",
                 monoPos: 0.7,
                 showGrid: false,
@@ -1717,6 +1761,8 @@
                 "brightness",
                 "chromatic",
                 "grain",
+                "scanLines",
+                "scanLineSize",
                 "gridSize",
                 "gridAlpha",
                 "monoPos",
@@ -1852,7 +1898,7 @@
     uniform vec2 u_resolution; uniform float u_time;
     uniform int u_theme; uniform float u_scale; uniform float u_warp;
     uniform float u_thickness; uniform float u_brightness; uniform float u_grain;
-    uniform float u_chromatic;
+    uniform float u_chromatic; uniform float u_scanLines; uniform float u_scanLineSize;
     uniform vec3 u_mono; uniform float u_monoPos;
 
     uniform float u_showGrid; uniform float u_gridSize; uniform float u_gridAlpha;
@@ -2048,6 +2094,11 @@
         float b = renderScene(uv, vec2(-chrAmount, 0.0)).b;
         vec3 lines = vec3(r, g, b);
         vec3 finalColor = bg + lines;
+
+        float sl = step(0.5, fract(gl_FragCoord.y / u_scanLineSize));
+        float scanline = mix(1.0, 1.0 - u_scanLines * 0.85, sl);
+        finalColor *= scanline;
+
         vec2 vUv = gl_FragCoord.xy / u_resolution.xy;
         float dist = distance(vUv, vec2(0.5));
         float vignette = smoothstep(1.2, 0.2, dist);
@@ -2112,6 +2163,8 @@
                 bright: gl.getUniformLocation(program, "u_brightness"),
                 grain: gl.getUniformLocation(program, "u_grain"),
                 chromatic: gl.getUniformLocation(program, "u_chromatic"),
+                scanLines: gl.getUniformLocation(program, "u_scanLines"),
+                scanLineSize: gl.getUniformLocation(program, "u_scanLineSize"),
                 mono: gl.getUniformLocation(program, "u_mono"),
                 monoPos: gl.getUniformLocation(program, "u_monoPos"),
                 showGrid: gl.getUniformLocation(program, "u_showGrid"),
@@ -2152,6 +2205,8 @@
                 gl.uniform1f(uLocs.bright, params.brightness);
                 gl.uniform1f(uLocs.grain, params.grain);
                 gl.uniform1f(uLocs.chromatic, params.chromatic);
+                gl.uniform1f(uLocs.scanLines, params.scanLines);
+                gl.uniform1f(uLocs.scanLineSize, params.scanLineSize);
                 gl.uniform3fv(uLocs.mono, hexToRgb(params.cMono));
                 gl.uniform1f(uLocs.monoPos, params.monoPos);
 
@@ -2241,9 +2296,9 @@
             btnExport.onclick = () => {
                 exportModal.classList.add("visible");
                 if (selectedFormat === "png") {
-                    updateExportButton("download", "Export PNG");
+                    updateExportButton("download", "Export");
                 } else {
-                    updateExportButton("video", "Start Recording");
+                    updateExportButton("video", "Record");
                 }
                 btnDoExport.classList.remove("success", "error");
                 setProgress(0, false);
@@ -2288,9 +2343,9 @@
                     btnDoExport.classList.remove("success", "error");
 
                     if (selectedFormat === "png") {
-                        updateExportButton("download", "Export PNG");
+                        updateExportButton("download", "Export");
                     } else if (selectedFormat === "video") {
-                        updateExportButton("video", "Start Recording");
+                        updateExportButton("video", "Record");
                     }
                 };
             });
@@ -2421,6 +2476,14 @@
                             offProgram,
                             "u_chromatic",
                         ),
+                        scanLines: offGl.getUniformLocation(
+                            offProgram,
+                            "u_scanLines",
+                        ),
+                        scanLineSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_scanLineSize",
+                        ),
                         mono: offGl.getUniformLocation(offProgram, "u_mono"),
                         monoPos: offGl.getUniformLocation(
                             offProgram,
@@ -2481,6 +2544,8 @@
                     offGl.uniform1f(offULocs.bright, params.brightness);
                     offGl.uniform1f(offULocs.grain, params.grain);
                     offGl.uniform1f(offULocs.chromatic, params.chromatic);
+                    offGl.uniform1f(offULocs.scanLines, params.scanLines);
+                    offGl.uniform1f(offULocs.scanLineSize, params.scanLineSize);
                     offGl.uniform3fv(offULocs.mono, hexToRgb(params.cMono));
                     offGl.uniform1f(offULocs.monoPos, params.monoPos);
                     offGl.uniform1f(
@@ -2535,7 +2600,7 @@
 
                             setTimeout(() => {
                                 btnDoExport.classList.remove("success");
-                                updateExportButton("download", "Export PNG");
+                                updateExportButton("download", "Export");
                             }, 2000);
                         }, 500);
                     }, "image/png");
@@ -2599,14 +2664,14 @@
 
                     setTimeout(() => {
                         btnDoExport.classList.remove("success");
-                        updateExportButton("video", "Start Recording");
+                        updateExportButton("video", "Record");
                     }, 2000);
                 };
 
                 mediaRecorder.start();
                 isRecording = true;
 
-                updateExportButton("square", `Stop (${duration}s)`, true);
+                updateExportButton("square", `Stop`, true);
                 setStatus(`Recording...`, "", true);
                 setProgress(0, true);
 
@@ -2619,7 +2684,7 @@
                     const remaining = duration - elapsed;
                     if (remaining >= 0) {
                         const span = btnDoExport.querySelector("span");
-                        if (span) span.innerText = `Stop (${remaining}s)`;
+                        if (span) span.innerText = `Stop`;
                     }
 
                     if (elapsed >= duration) {
