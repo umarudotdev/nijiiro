@@ -8,6 +8,7 @@
         <style>
             :root {
                 --bg-glass: rgba(15, 15, 20, 0.4);
+                --bg-panel: rgba(20, 20, 25, 0.85);
                 --bg-input: rgba(0, 0, 0, 0.3);
                 --bg-input-hover: rgba(0, 0, 0, 0.4);
                 --bg-input-focus: rgba(0, 0, 0, 0.5);
@@ -16,6 +17,8 @@
                 --text-muted: rgba(255, 255, 255, 0.5);
                 --text-main: #eee;
                 --primary: #fff;
+                --danger: #ef4444;
+                --danger-hover: #dc2626;
             }
 
             * {
@@ -174,24 +177,58 @@
                 color: rgba(255, 255, 255, 0.9);
             }
 
-            #btn-reset {
+            .header-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .btn-icon {
                 background: transparent;
                 border: 1px solid transparent;
                 color: rgba(255, 255, 255, 0.5);
                 cursor: pointer;
-                padding: 4px;
+                padding: 6px;
                 border-radius: 6px;
                 transition: all 0.2s;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
-            #btn-reset:hover {
-                color: #ef4444;
+            .btn-icon:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+            .btn-icon.danger:hover {
+                color: var(--danger);
                 background: rgba(239, 68, 68, 0.15);
                 border-color: rgba(239, 68, 68, 0.2);
             }
-            #btn-reset .lucide {
+
+            /* Reset Confirmation State */
+            .btn-icon.confirming {
+                background: var(--danger);
+                color: #fff !important; /* Enforce white text on red bg */
+                border-color: var(--danger);
+                animation: pulse-red 2s infinite;
+            }
+            .btn-icon.confirming:hover {
+                background: var(--danger-hover);
+                color: #fff !important;
+            }
+            @keyframes pulse-red {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                }
+                70% {
+                    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+                }
+                100% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                }
+            }
+
+            .btn-icon .lucide {
                 width: 14px;
                 height: 14px;
             }
@@ -268,8 +305,8 @@
                 color: #fff;
             }
 
-            /* Export Modal Styles */
-            #export-modal {
+            /* Common Modal Styles */
+            .modal-overlay {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -284,12 +321,12 @@
                 pointer-events: none;
                 transition: opacity 0.3s ease;
             }
-            #export-modal.visible {
+            .modal-overlay.visible {
                 opacity: 1;
                 pointer-events: auto;
             }
             .modal-content {
-                background: rgba(20, 20, 25, 0.85);
+                background: var(--bg-panel);
                 border: 1px solid var(--border-light);
                 border-radius: 20px;
                 padding: 0;
@@ -303,8 +340,11 @@
                 overflow: hidden;
                 transform: scale(0.95) translateY(10px);
                 transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+                max-height: 80vh;
+                display: flex;
+                flex-direction: column;
             }
-            #export-modal.visible .modal-content {
+            .modal-overlay.visible .modal-content {
                 transform: scale(1) translateY(0);
             }
             .modal-header {
@@ -313,6 +353,7 @@
                 align-items: center;
                 justify-content: space-between;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                flex-shrink: 0;
             }
             .modal-header h2 {
                 margin: 0;
@@ -344,6 +385,7 @@
             }
             .modal-body {
                 padding: 24px;
+                overflow-y: auto;
             }
             .export-section {
                 margin-bottom: 24px;
@@ -485,6 +527,7 @@
 
             /* --- Improved Input Styling --- */
             input[type="number"],
+            input[type="text"],
             select,
             .styled-input {
                 width: 100%;
@@ -525,6 +568,7 @@
             }
 
             input[type="number"]:hover,
+            input[type="text"]:hover,
             select:hover,
             .styled-input:hover {
                 border-color: var(--border-hover);
@@ -532,6 +576,7 @@
             }
 
             input[type="number"]:focus,
+            input[type="text"]:focus,
             select:focus,
             .styled-input:focus {
                 border-color: rgba(255, 255, 255, 0.6);
@@ -555,6 +600,7 @@
                 padding: 20px 24px 24px;
                 background: rgba(0, 0, 0, 0.2);
                 border-top: 1px solid rgba(255, 255, 255, 0.06);
+                flex-shrink: 0;
             }
 
             .btn-export-primary {
@@ -896,6 +942,160 @@
             .color-picker-large::-webkit-color-swatch {
                 border: none;
             }
+
+            /* Presets List Styles */
+            .preset-save-group {
+                display: flex;
+                align-items: stretch;
+                margin-bottom: 24px;
+            }
+            .preset-save-group input {
+                flex: 1;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                border-right: none;
+                background: rgba(0, 0, 0, 0.2);
+            }
+            .preset-save-group input:focus {
+                z-index: 2;
+                background: rgba(0, 0, 0, 0.4);
+            }
+            .preset-save-group button {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                border-top-right-radius: 6px;
+                border-bottom-right-radius: 6px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid var(--border-light);
+                color: #fff;
+                padding: 0 16px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .preset-save-group button:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            .preset-save-group button .lucide {
+                width: 16px;
+                height: 16px;
+            }
+
+            .presets-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+                max-height: 400px;
+                overflow-y: auto;
+                padding-right: 4px;
+            }
+            .presets-grid::-webkit-scrollbar {
+                width: 4px;
+            }
+            .presets-grid::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.1);
+            }
+            .presets-grid::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 2px;
+            }
+
+            .preset-card {
+                position: relative;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            .preset-card:hover {
+                transform: translateY(-2px);
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
+            }
+
+            .preset-thumb {
+                width: 100%;
+                aspect-ratio: 16/9;
+                background: #000;
+                overflow: hidden;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .preset-thumb img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.8;
+                transition: opacity 0.2s;
+            }
+            .preset-card:hover .preset-thumb img {
+                opacity: 1;
+            }
+
+            .preset-info {
+                padding: 10px;
+            }
+            .preset-name {
+                font-size: 11px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: block;
+            }
+
+            .preset-delete {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                width: 24px;
+                height: 24px;
+                background: rgba(0, 0, 0, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.7);
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transform: scale(0.9);
+                transition: all 0.2s;
+                cursor: pointer;
+                backdrop-filter: blur(4px);
+            }
+            .preset-card:hover .preset-delete {
+                opacity: 1;
+                transform: scale(1);
+            }
+            .preset-delete:hover {
+                background: #ef4444;
+                color: #fff;
+                border-color: #ef4444;
+            }
+            .preset-delete .lucide {
+                width: 12px;
+                height: 12px;
+            }
+
+            .empty-presets {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px 20px;
+                color: var(--text-muted);
+                font-size: 12px;
+                background: rgba(255, 255, 255, 0.02);
+                border-radius: 12px;
+                border: 1px dashed rgba(255, 255, 255, 0.1);
+            }
+
+            /* Wider modal for presets */
+            #presets-modal .modal-content {
+                width: 600px;
+                max-width: 95vw;
+            }
         </style>
     </head>
     <body>
@@ -938,13 +1138,22 @@
         <div id="controls">
             <div class="controls-header">
                 <h3>Parameters</h3>
-                <button
-                    id="btn-reset"
-                    class="btn-icon"
-                    title="Reset Parameters"
-                >
-                    <i data-lucide="rotate-ccw"></i>
-                </button>
+                <div class="header-actions">
+                    <button
+                        id="btn-open-presets"
+                        class="btn-icon"
+                        title="Manage Presets"
+                    >
+                        <i data-lucide="grid"></i>
+                    </button>
+                    <button
+                        id="btn-reset"
+                        class="btn-icon danger"
+                        title="Reset Parameters"
+                    >
+                        <i data-lucide="rotate-ccw"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="scroll-content">
@@ -1342,7 +1551,7 @@
             </div>
         </div>
 
-        <div id="export-modal">
+        <div id="export-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Export</h2>
@@ -1464,6 +1673,37 @@
             </div>
         </div>
 
+        <div id="presets-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Presets</h2>
+                    <button class="modal-close" id="btn-close-presets">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="preset-save-group">
+                        <input
+                            type="text"
+                            id="preset-name-input"
+                            class="styled-input"
+                            placeholder="Name your preset..."
+                        />
+                        <button
+                            id="btn-save-preset"
+                            title="Save Current Config"
+                        >
+                            <i data-lucide="save"></i>
+                        </button>
+                    </div>
+                    <div class="export-section-label" style="margin-top: 10px">
+                        Saved Presets
+                    </div>
+                    <div id="presets-list" class="presets-grid"></div>
+                </div>
+            </div>
+        </div>
+
         <script>
             function renderIcons() {
                 if (window.lucide) {
@@ -1473,6 +1713,7 @@
 
             document.addEventListener("DOMContentLoaded", () => {
                 renderIcons();
+                loadPresetsFromStorage();
             });
 
             function hexToRgb(hex) {
@@ -1560,6 +1801,7 @@
             let params = { ...defaults };
             let customStops = JSON.parse(JSON.stringify(defaultStops));
             let uiVisible = true;
+            let savedPresets = [];
 
             const SNAP_POINTS = [0.0, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0];
             const SNAP_THRESHOLD = 0.03;
@@ -1595,31 +1837,41 @@
                 } catch (e) {}
             }
 
+            function applyState(newParams, newStops) {
+                params = { ...defaults, ...newParams };
+                customStops = JSON.parse(JSON.stringify(newStops));
+
+                Object.keys(params).forEach((key) => {
+                    const el = document.getElementById(key);
+                    const numEl = document.getElementById(`num-${key}`);
+                    if (el) {
+                        if (el.type === "checkbox") {
+                            el.checked = params[key];
+                        } else {
+                            el.value = params[key];
+                            if (numEl) numEl.value = params[key];
+                        }
+                    }
+                });
+
+                themeSelect.value = params.theme;
+                updatePanels();
+                renderStopsUI();
+                updateMonoPreview();
+                updateURL();
+            }
+
             function loadFromURL() {
                 if (window.location.hash && window.location.hash.length > 1) {
                     try {
                         const raw = window.location.hash.substring(1);
                         const state = JSON.parse(atob(raw));
-                        if (state.p) params = { ...params, ...state.p };
-                        if (state.s) customStops = state.s;
-
-                        Object.keys(params).forEach((key) => {
-                            const el = document.getElementById(key);
-                            const numEl = document.getElementById(`num-${key}`);
-
-                            if (el) {
-                                if (el.type === "checkbox") {
-                                    el.checked = params[key];
-                                } else {
-                                    el.value = params[key];
-                                    if (numEl) numEl.value = params[key];
-                                }
-                            }
-                        });
-                        themeSelect.value = params.theme;
-                        updatePanels();
-                        renderStopsUI();
-                        updateMonoPreview();
+                        if (state.p || state.s) {
+                            applyState(
+                                state.p || params,
+                                state.s || customStops,
+                            );
+                        }
                     } catch (e) {}
                 }
             }
@@ -1856,26 +2108,30 @@
                 });
             });
 
-            document
-                .getElementById("btn-reset")
-                .addEventListener("click", () => {
-                    Object.keys(defaults).forEach((key) => {
-                        params[key] = defaults[key];
-                        const el = document.getElementById(key);
-                        const num = document.getElementById(`num-${key}`);
-                        if (el) {
-                            if (el.type === "checkbox")
-                                el.checked = defaults[key];
-                            else el.value = defaults[key];
-                        }
-                        if (num) num.value = defaults[key];
-                    });
-                    customStops = JSON.parse(JSON.stringify(defaultStops));
-                    renderStopsUI();
-                    updatePanels();
-                    updateMonoPreview();
+            const btnReset = document.getElementById("btn-reset");
+            let resetTimeout;
+
+            btnReset.onclick = () => {
+                if (btnReset.classList.contains("confirming")) {
+                    applyState(defaults, defaultStops);
                     window.history.replaceState(null, null, " ");
-                });
+
+                    clearTimeout(resetTimeout);
+                    btnReset.classList.remove("confirming");
+                    btnReset.innerHTML = '<i data-lucide="rotate-ccw"></i>';
+                    renderIcons();
+                } else {
+                    btnReset.classList.add("confirming");
+                    btnReset.innerHTML = '<i data-lucide="check"></i>';
+                    renderIcons();
+
+                    resetTimeout = setTimeout(() => {
+                        btnReset.classList.remove("confirming");
+                        btnReset.innerHTML = '<i data-lucide="rotate-ccw"></i>';
+                        renderIcons();
+                    }, 2000);
+                }
+            };
 
             loadFromURL();
             if (!window.location.hash) renderStopsUI();
@@ -1887,6 +2143,293 @@
                 requestAnimationFrame(updateLiquidGlass);
             });
             resizeObserver.observe(controlsDiv);
+
+            const presetsModal = document.getElementById("presets-modal");
+            const btnOpenPresets = document.getElementById("btn-open-presets");
+            const btnClosePresets =
+                document.getElementById("btn-close-presets");
+            const btnSavePreset = document.getElementById("btn-save-preset");
+            const presetNameInput =
+                document.getElementById("preset-name-input");
+            const presetsListContainer =
+                document.getElementById("presets-list");
+
+            function loadPresetsFromStorage() {
+                try {
+                    const stored = localStorage.getItem("nijiiro_presets");
+                    if (stored) {
+                        savedPresets = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.error("Failed to load presets", e);
+                }
+                renderPresetsList();
+            }
+
+            function savePresetsToStorage() {
+                localStorage.setItem(
+                    "nijiiro_presets",
+                    JSON.stringify(savedPresets),
+                );
+                renderPresetsList();
+            }
+
+            function generateThumbnail(w, h) {
+                return new Promise((resolve) => {
+                    const offCanvas = document.createElement("canvas");
+                    offCanvas.width = w;
+                    offCanvas.height = h;
+                    const offGl = offCanvas.getContext("webgl2", {
+                        antialias: false,
+                        preserveDrawingBuffer: true,
+                    });
+
+                    if (!offGl) {
+                        resolve(null);
+                        return;
+                    }
+
+                    const offProgram = offGl.createProgram();
+                    offGl.attachShader(
+                        offProgram,
+                        createShaderForContext(
+                            offGl,
+                            offGl.VERTEX_SHADER,
+                            vsSource,
+                        ),
+                    );
+                    offGl.attachShader(
+                        offProgram,
+                        createShaderForContext(
+                            offGl,
+                            offGl.FRAGMENT_SHADER,
+                            fsSource,
+                        ),
+                    );
+                    offGl.linkProgram(offProgram);
+
+                    const offPosBuffer = offGl.createBuffer();
+                    offGl.bindBuffer(offGl.ARRAY_BUFFER, offPosBuffer);
+                    offGl.bufferData(
+                        offGl.ARRAY_BUFFER,
+                        new Float32Array([-1, 1, 1, 1, -1, -1, 1, -1]),
+                        offGl.STATIC_DRAW,
+                    );
+                    offGl.enableVertexAttribArray(
+                        offGl.getAttribLocation(offProgram, "position"),
+                    );
+                    offGl.vertexAttribPointer(
+                        offGl.getAttribLocation(offProgram, "position"),
+                        2,
+                        offGl.FLOAT,
+                        false,
+                        0,
+                        0,
+                    );
+
+                    const offULocs = {
+                        res: offGl.getUniformLocation(
+                            offProgram,
+                            "u_resolution",
+                        ),
+                        time: offGl.getUniformLocation(offProgram, "u_time"),
+                        theme: offGl.getUniformLocation(offProgram, "u_theme"),
+                        scale: offGl.getUniformLocation(offProgram, "u_scale"),
+                        warp: offGl.getUniformLocation(offProgram, "u_warp"),
+                        thick: offGl.getUniformLocation(
+                            offProgram,
+                            "u_thickness",
+                        ),
+                        bright: offGl.getUniformLocation(
+                            offProgram,
+                            "u_brightness",
+                        ),
+                        grain: offGl.getUniformLocation(offProgram, "u_grain"),
+                        chromatic: offGl.getUniformLocation(
+                            offProgram,
+                            "u_chromatic",
+                        ),
+                        scanLines: offGl.getUniformLocation(
+                            offProgram,
+                            "u_scanLines",
+                        ),
+                        scanLineSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_scanLineSize",
+                        ),
+                        mono: offGl.getUniformLocation(offProgram, "u_mono"),
+                        monoPos: offGl.getUniformLocation(
+                            offProgram,
+                            "u_monoPos",
+                        ),
+                        showGrid: offGl.getUniformLocation(
+                            offProgram,
+                            "u_showGrid",
+                        ),
+                        gridSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_gridSize",
+                        ),
+                        gridAlpha: offGl.getUniformLocation(
+                            offProgram,
+                            "u_gridAlpha",
+                        ),
+                        showBlur: offGl.getUniformLocation(
+                            offProgram,
+                            "u_showBlur",
+                        ),
+                        blurStr: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurStr",
+                        ),
+                        blurSize: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurSize",
+                        ),
+                        blurSpeed: offGl.getUniformLocation(
+                            offProgram,
+                            "u_blurSpeed",
+                        ),
+                        stopCount: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopCount",
+                        ),
+                        stopColors: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopColors",
+                        ),
+                        stopPos: offGl.getUniformLocation(
+                            offProgram,
+                            "u_stopPos",
+                        ),
+                    };
+
+                    offGl.viewport(0, 0, w, h);
+                    offGl.useProgram(offProgram);
+
+                    offGl.uniform2f(offULocs.res, w, h);
+                    offGl.uniform1f(offULocs.time, timeAccumulator * 0.001);
+                    offGl.uniform1i(offULocs.theme, params.theme);
+                    offGl.uniform1f(offULocs.scale, params.scale);
+                    offGl.uniform1f(offULocs.warp, params.warp);
+                    offGl.uniform1f(offULocs.thick, params.thickness);
+                    offGl.uniform1f(offULocs.bright, params.brightness);
+                    offGl.uniform1f(offULocs.grain, params.grain);
+                    offGl.uniform1f(offULocs.chromatic, params.chromatic);
+                    offGl.uniform1f(offULocs.scanLines, params.scanLines);
+                    offGl.uniform1f(offULocs.scanLineSize, params.scanLineSize);
+                    offGl.uniform3fv(offULocs.mono, hexToRgb(params.cMono));
+                    offGl.uniform1f(offULocs.monoPos, params.monoPos);
+                    offGl.uniform1f(
+                        offULocs.showGrid,
+                        params.showGrid ? 1.0 : 0.0,
+                    );
+                    offGl.uniform1f(offULocs.gridSize, params.gridSize);
+                    offGl.uniform1f(offULocs.gridAlpha, params.gridAlpha);
+                    offGl.uniform1f(
+                        offULocs.showBlur,
+                        params.showBlur ? 1.0 : 0.0,
+                    );
+                    offGl.uniform1f(offULocs.blurStr, params.blurStr);
+                    offGl.uniform1f(offULocs.blurSize, params.blurSize);
+                    offGl.uniform1f(offULocs.blurSpeed, params.blurSpeed);
+
+                    const sortedStops = [...customStops].sort(
+                        (a, b) => a.pos - b.pos,
+                    );
+                    const flatColors = [];
+                    const flatPos = [];
+                    sortedStops.forEach((s) => {
+                        flatColors.push(...hexToRgb(s.color));
+                        flatPos.push(s.pos);
+                    });
+                    offGl.uniform1i(offULocs.stopCount, sortedStops.length);
+                    offGl.uniform3fv(
+                        offULocs.stopColors,
+                        new Float32Array(flatColors),
+                    );
+                    offGl.uniform1fv(
+                        offULocs.stopPos,
+                        new Float32Array(flatPos),
+                    );
+
+                    offGl.drawArrays(offGl.TRIANGLE_STRIP, 0, 4);
+
+                    const data = offCanvas.toDataURL("image/jpeg", 0.7);
+                    resolve(data);
+                });
+            }
+
+            function renderPresetsList() {
+                presetsListContainer.innerHTML = "";
+                if (savedPresets.length === 0) {
+                    presetsListContainer.innerHTML =
+                        '<div class="empty-presets">No saved presets yet.</div>';
+                    return;
+                }
+
+                savedPresets.forEach((preset, index) => {
+                    const card = document.createElement("div");
+                    card.className = "preset-card";
+                    card.innerHTML = `
+                        <div class="preset-thumb">
+                             ${preset.thumbnail ? `<img src="${preset.thumbnail}">` : ""}
+                        </div>
+                        <div class="preset-info">
+                            <span class="preset-name">${preset.name}</span>
+                        </div>
+                        <button class="preset-delete" title="Delete Preset"><i data-lucide="trash-2"></i></button>
+                    `;
+
+                    card.addEventListener("click", (e) => {
+                        if (e.target.closest(".preset-delete")) return;
+                        applyState(preset.params, preset.stops);
+                        presetsModal.classList.remove("visible");
+                    });
+
+                    card.querySelector(".preset-delete").addEventListener(
+                        "click",
+                        (e) => {
+                            e.stopPropagation();
+                            savedPresets.splice(index, 1);
+                            savePresetsToStorage();
+                        },
+                    );
+
+                    presetsListContainer.appendChild(card);
+                });
+                renderIcons();
+            }
+
+            btnOpenPresets.onclick = () => {
+                presetsModal.classList.add("visible");
+            };
+            btnClosePresets.onclick = () => {
+                presetsModal.classList.remove("visible");
+            };
+            presetsModal.onclick = (e) => {
+                if (e.target === presetsModal)
+                    presetsModal.classList.remove("visible");
+            };
+
+            btnSavePreset.onclick = async () => {
+                let name = presetNameInput.value.trim();
+                if (!name) {
+                    name = `Preset ${savedPresets.length + 1}`;
+                }
+
+                const thumbnail = await generateThumbnail(320, 180);
+
+                savedPresets.push({
+                    name: name,
+                    params: { ...params },
+                    stops: JSON.parse(JSON.stringify(customStops)),
+                    thumbnail: thumbnail,
+                });
+
+                savePresetsToStorage();
+                presetNameInput.value = "";
+            };
 
             const vsSource = `#version 300 es
     in vec4 position;
